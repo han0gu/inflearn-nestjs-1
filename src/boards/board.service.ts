@@ -5,25 +5,33 @@ import { BoardRepository } from './board.repository';
 import { BoardDto } from './dto/board.dto';
 
 @Injectable()
-export class BoardsService {
+export class BoardService {
   constructor(
     @InjectRepository(BoardRepository)
     private boardRepository: BoardRepository,
   ) {}
 
-  createBoard(boardDto: BoardDto): Promise<Board> {
+  createBoard = (boardDto: BoardDto): Promise<Board> => {
     return this.boardRepository.createBoard(boardDto);
-  }
+  };
 
   getAllBoards = (): Promise<Board[]> => {
     return this.boardRepository.getAllBoards();
   };
 
-  async getBoardById(id: number): Promise<Board> {
-    const board = await this.boardRepository.findOne(id);
+  getBoardById = (id: number): Promise<Board> => {
+    const board = this.boardRepository.getBoardById(id);
     if (!board) {
-      throw new NotFoundException(`Cannot find board with id ${id}`);
+      throw new NotFoundException();
     }
     return board;
-  }
+  };
+
+  updateBoardById = (id: number) => {
+    return this.boardRepository.updateBoardById(id);
+  };
+
+  deleteBoardById = (id: number) => {
+    return this.boardRepository.deleteBoardById(id);
+  };
 }
