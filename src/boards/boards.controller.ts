@@ -3,41 +3,31 @@ import {
   Controller,
   Get,
   Param,
-  Patch,
   Post,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { Board, BOARD_STATUS } from './board.model';
+import { Board } from './board.entity';
 import { BoardsService } from './boards.service';
 import { BoardDto } from './dto/board.dto';
-import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 
 @Controller('boards')
 export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
-  @Get('/')
-  getAllBoards(): Board[] {
+  @Post()
+  @UsePipes(ValidationPipe)
+  createBoard(@Body() boardDto: BoardDto): Promise<Board> {
+    return this.boardsService.createBoard(boardDto);
+  }
+
+  @Get()
+  getAllBoards(): Promise<Board[]> {
     return this.boardsService.getAllBoards();
   }
 
-  @Get('/:boardId')
-  getBoardById(@Param('boardId') boardId: string): Board {
-    return this.boardsService.getBoardById(boardId);
-  }
-
-  @Post()
-  @UsePipes(ValidationPipe)
-  createBoard(@Body() bodyObj: BoardDto): Board {
-    return this.boardsService.createBoard(bodyObj);
-  }
-
-  @Patch('/:boardId/status')
-  updateBoardStatus(
-    @Param('boardId') boardId: string,
-    @Body('status', BoardStatusValidationPipe) status: BOARD_STATUS,
-  ) {
-    return this.boardsService.updateBoardStatus(boardId, status);
+  @Get('/:id')
+  getBoardById(@Param('id') id: number): Promise<Board> {
+    return this.boardsService.getBoardById(id);
   }
 }
